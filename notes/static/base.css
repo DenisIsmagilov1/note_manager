@@ -1,0 +1,71 @@
+body {
+    background-color: #f6f8fa;
+    margin: 0;
+    font-family: helvetica, sans-serif;
+}
+
+a {
+    text-decoration: none;
+}
+
+#header {
+    width: 100%;
+    padding: 20px 0;
+    color: #ffffff;
+    background-color: #1f242a;
+}
+
+#header a {
+    color: #ffffff;
+}
+
+#logo {
+	margin-left: 5%;
+}
+
+#login {
+	float: right;
+	margin-right: 5%;
+}
+
+#content {
+	width: 60%;
+	margin: 2% auto;
+}
+
+#content a:hover{
+    text-decoration: underline;
+}
+
+.note{
+	width: 100%;
+	padding: 0 20px 20px 20px;
+	margin: 20px 0;
+	background-color: #ffffff;
+	border: 1px solid #d2d6db;
+	border-radius: 5px;
+}
+
+.note a {
+    color: #000;
+}
+
+.score {
+	float: right;
+}
+
+.unelected {
+	color: #d2d6db;
+}
+
+.unelected:hover {
+	color: #ffd700;
+}
+
+.elected {
+	color: #ffd700;
+}
+
+.elected:hover {
+	color: #d2d6db;
+}

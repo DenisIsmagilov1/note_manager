@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Your notes{% endblock %}
+
+{% block content %}
+    <h1>Your notes</h1>
+    {% for note in object_list %}
+        <div class="note">
+            <h2><a href="#">{{ note.title }}</a></h2>
+            <span><a href="#">{{ note.get_category_display }}</a></span>
+            <p>{{ note.description|truncatewords:50|linebreaks }}</p>
+            <span>{{ note.created }}</span>
+            <div class="score">
+                {% if note.elect %}
+                    <span class="elected">Elected</span>
+                {% else %}
+                    <span class="unelected">Unelected</span>
+                {% endif %}
+            </div>
+        </div>
+    {% empty %}
+        <span>Your note list is empty. <a href="#">Add your new note.</a></span>
+    {% endfor %}
+{% endblock %}
