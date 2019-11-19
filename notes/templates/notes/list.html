@@ -19,6 +19,6 @@
             </div>
         </div>
     {% empty %}
-        <span>Your note list is empty. <a href="#">Add your new note.</a></span>
+        <span>Your note list is empty. <a href="{% url 'notes:note_create' %}">Add your new note.</a></span>
     {% endfor %}
 {% endblock %}

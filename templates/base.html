@@ -10,6 +10,7 @@
     <div id="header">
         <span id="logo"><a href="{% url 'notes:note_list' %}">Note Manager</a></span>
         {% if request.user.is_authenticated  %}
+            <span id="new-note"><a href="{% url 'notes:note_create' %}">Create note</a></span>
             <span id="login"><a href="{% url 'account:logout' %}">Logout</a></span>
         {% else %}
             <span id="login"><a href="{% url 'account:login' %}">Login</a></span>
