@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ object.title }}{% endblock %}
+
+{% block content %}
+    <div class="note">
+        <h2>{{ note.title }}</h2>
+        <span><a href="#">{{ note.get_category_display }}</a></span>
+        <p>{{ note.description|linebreaks }}</p>
+        <span>{{ note.created }}</span>
+        <div class="score">
+            {% if note.elect %}
+                <span class="elected">Elected</span>
+            {% else %}
+                <span class="unelected">Unelected</span>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

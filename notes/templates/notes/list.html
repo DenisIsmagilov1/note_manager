@@ -6,7 +6,7 @@
     <h1>Your notes</h1>
     {% for note in object_list %}
         <div class="note">
-            <h2><a href="#">{{ note.title }}</a></h2>
+            <h2><a href="{% url 'notes:note_detail' note.id %}">{{ note.title }}</a></h2>
             <span><a href="#">{{ note.get_category_display }}</a></span>
             <p>{{ note.description|truncatewords:50|linebreaks }}</p>
             <span>{{ note.created }}</span>

@@ -1,4 +1,5 @@
 from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Note
 from django.urls import reverse_lazy
@@ -26,3 +27,8 @@ class NoteCreateView(LoginRequiredMixin, CreateView):
         form.instance.owner = self.request.user
         return super(NoteCreateView, self).form_valid(form)
 
+
+class NoteDetailView(LoginRequiredMixin, DetailView):
+    login_url = reverse_lazy('account:login')
+    model = Note
+    template_name = 'notes/detail.html'
