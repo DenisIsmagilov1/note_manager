@@ -15,5 +15,6 @@
                 <span class="unelected">Unelected</span>
             {% endif %}
         </div>
+        <span><a href="{% url 'notes:note_update' object.id %}">Update</a></span>
     </div>
 {% endblock %}
