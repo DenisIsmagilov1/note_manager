@@ -8,7 +8,7 @@
         <span><a href="#">{{ note.get_category_display }}</a></span>
         <p>{{ note.description|linebreaks }}</p>
         <span>{{ note.created }}</span>
-        <div class="score">
+        <div data-id="{{ note.id }}" class="score">
             {% if note.elect %}
                 <span class="elected">Elected</span>
             {% else %}
@@ -17,4 +17,22 @@
         </div>
         <span><a href="{% url 'notes:note_update' object.id %}">Update</a></span>
     </div>
+{% endblock %}
+
+{% block domready %}
+    $('.score').click(function (e) {
+        e.preventDefault();
+        var tag = $(this).find('span');
+        var pre_class = $(this).find('span').attr('class');
+        $.post(
+            '{% url 'notes:note_elect' %}',
+            {id: $(this).data('id'),
+            function(){
+                    tag.attr('class', null);
+                    tag.addClass(pre_class == 'elected' ? 'unelected' : 'elected');
+                    tag.text(pre_class == 'elected' ? 'Unelected' : 'Elected');
+                }
+            }
+        )
+    });
 {% endblock %}
