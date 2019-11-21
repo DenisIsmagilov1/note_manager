@@ -73,3 +73,8 @@ a {
 .elected:hover {
 	color: #d2d6db;
 }
+
+.delete:hover {
+	color: #cc0000;
+	text-decoration: underline;
+}

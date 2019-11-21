@@ -3,7 +3,7 @@ from django.views.generic.detail import DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Note
 from django.urls import reverse_lazy
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .forms import NoteForm
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
@@ -44,6 +44,16 @@ class NoteUpdateView(LoginRequiredMixin, UpdateView):
     form_class = NoteForm
     template_name = 'notes/update.html'
     success_url = reverse_lazy('notes:note_list')
+
+
+@login_required
+@require_POST
+def note_delete(request):
+    note_id = request.POST['id']
+    if note_id:
+        note = get_object_or_404(Note, id=note_id)
+        note.delete()
+        return JsonResponse({'status':'ok'})
 
 
 @login_required
