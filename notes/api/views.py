@@ -1,6 +1,8 @@
 from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from .serializers import NoteSerializer
 from ..models import Note, Category
@@ -8,6 +10,8 @@ from datetime import datetime
 
 
 class NoteListView(ListAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     queryset = Note.objects.all()
     serializer_class = NoteSerializer
 
@@ -38,6 +42,8 @@ class NoteListView(ListAPIView):
 
 
 class NoteElectView(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     def post(self, request, *args, **kwargs):
         note_id = request.POST['id']
         if note_id:
@@ -48,6 +54,8 @@ class NoteElectView(APIView):
 
 
 class NoteDeleteView(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     def post(self, request, *args, **kwargs):
         note_id = request.POST['id']
         if note_id:

@@ -15,12 +15,17 @@
     });
     </script>
     <script>
+        function truncate_words(str, qtywords) {
+            if (str.split(' ').length < qtywords)
+                return str;
+            return str.split(' ', qtywords).join(' ') + ' ...'
+        }
         function get_note(title, id, category, description, created, is_elected) {
             elect = is_elected == true ? 'Elected' : 'Unelected';
             note = $('<div/>', {class: 'note'});
             $('<h2/>').append($('<a/>', {href: '/notes/detail/'+id, text: title})).appendTo(note);
-            $('<a/>', {text: category['title']}).appendTo(note);
-            $('<p/>', {text: description}).appendTo(note);
+            $('<span/>', {text: category['title']}).appendTo(note);
+            $('<p/>', {text: truncate_words(description, 49)}).appendTo(note);
             $('<span/>', {text: created}).appendTo(note);
             $('<div/>', {'data-id': id, class: 'score'}).append($('<span/>', {class: elect.toLowerCase(), text: elect})).appendTo(note);
             $('<span/>', {'data-id': id, class: 'delete', text: ' Delete'}).appendTo(note);

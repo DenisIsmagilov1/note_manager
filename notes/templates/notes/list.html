@@ -4,19 +4,21 @@
 
 {% block subheader %}
     <div id="subheader">
-        <div id="sorter">
-            <label for="field_list">Order by</label>
-            <select id="field_list">
-                <option value=""></option>
-                {% for field in order_field_names %}
-                    <option value="{{ field }}">{{ field }}</option>
-                {% endfor %}
-            </select>
-            <div>
-                <input id="ascending" name="sorter" type="radio" value="ascending" checked>
-                <label for="ascending">Ascending</label>
-                <input id="descending" name="sorter" type="radio" value="descending">
-                <label for="descending">Descending</label>
+        <div id="ggg">
+            <div id="sorter">
+                <label for="field_list">Order by</label>
+                <select id="field_list">
+                    <option value=""></option>
+                    {% for field in order_field_names %}
+                        <option value="{{ field }}">{{ field }}</option>
+                    {% endfor %}
+                </select>
+                <div>
+                    <input id="ascending" name="sorter" type="radio" value="ascending" checked>
+                    <label for="ascending">Ascending</label>
+                    <input id="descending" name="sorter" type="radio" value="descending">
+                    <label for="descending">Descending</label>
+                </div>
             </div>
             <div id="filter">
                 <label for="title">Title</label>
@@ -37,8 +39,8 @@
                 <label for="datepicker">Created</label>
                 <input type="text" id="datepicker">
             </div>
+            <button id="sort_button">Apply</button>
         </div>
-        <button id="sort_button">Apply</button>
     </div>
 {% endblock %}
 
@@ -47,7 +49,7 @@
     {% for note in object_list %}
         <div class="note">
             <h2><a href="{% url 'notes:note_detail' note.id %}">{{ note.title }}</a></h2>
-            <a href="#">{{ note.category.title }}</a>
+            <span>{{ note.category.title }}</span>
             <p>{{ note.description|truncatewords:50|linebreaks }}</p>
             <span>{{ note.created }}</span>
             <div data-id="{{ note.id }}" class="score">

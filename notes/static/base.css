@@ -8,9 +8,15 @@ a {
     text-decoration: none;
 }
 
-input{
+button, input[type=submit]{
+	background-color: #1074e7;
 	border: 1px solid #d2d6db;
 	border-radius: 5px;
+	padding: 10px 20px;
+}
+
+button:hover, input[type=submit]:hover{
+	background-color: #0366d6;
 }
 
 #header {
@@ -121,16 +127,6 @@ input{
 	background-color: #28a745;
 }
 
-#login-form button{
-	background-color: #1074e7;
-	border: 1px solid #d2d6db;
-	border-radius: 5px;
-}
-
-#login-form button:hover{
-	background-color: #0366d6;
-}
-
 #login-form button a {
 	color: #ffffff;
 	text-decoration: none;
@@ -147,10 +143,15 @@ input{
 
 #subheader {
 	padding: 10px 30px;
-	background-color: #c8e1ff;
+	background-color: #eeeeee;
 }
 
 #subheader div{
 	display: inline;
+}
+
+#subheader button{
+	padding: 5px 15px;
+	margin: 0 20px;
 }
 
