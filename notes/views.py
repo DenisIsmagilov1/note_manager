@@ -1,14 +1,10 @@
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Note
+from .models import Note, Category
 from django.urls import reverse_lazy
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import CreateView, UpdateView
 from .forms import NoteForm
-from django.views.decorators.http import require_POST
-from django.contrib.auth.decorators import login_required
-from django.http.response import JsonResponse
-from django.shortcuts import get_object_or_404
 
 
 class NoteListView(LoginRequiredMixin, ListView):
@@ -19,6 +15,14 @@ class NoteListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         queryset = Note.objects.filter(owner=self.request.user)
         return queryset
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        result = super(NoteListView, self).get_context_data(**kwargs)
+        categories = Category.objects.all()
+        result['categories'] = categories
+        result['order_field_names'] = ['created', 'category', 'elect']
+        result['filter_field_names'] = ['created', 'title', 'category']
+        return result
 
 
 class NoteCreateView(LoginRequiredMixin, CreateView):
@@ -44,24 +48,3 @@ class NoteUpdateView(LoginRequiredMixin, UpdateView):
     form_class = NoteForm
     template_name = 'notes/update.html'
     success_url = reverse_lazy('notes:note_list')
-
-
-@login_required
-@require_POST
-def note_delete(request):
-    note_id = request.POST['id']
-    if note_id:
-        note = get_object_or_404(Note, id=note_id)
-        note.delete()
-        return JsonResponse({'status':'ok'})
-
-
-@login_required
-@require_POST
-def note_elect(request):
-    note_id = request.POST['id']
-    if note_id:
-        note = get_object_or_404(Note, id=note_id)
-        note.elect = not note.elect
-        note.save()
-        return JsonResponse({'status': 'ok'})

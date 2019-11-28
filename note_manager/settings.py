@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'notes.apps.NotesConfig',
-    'account.apps.AccountConfig'
+    'account.apps.AccountConfig',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
@@ -113,7 +114,7 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_L10N = True
+USE_L10N = False
 
 USE_TZ = True
 
@@ -125,3 +126,11 @@ STATIC_URL = '/static/'
 
 LOGIN_REDIRECT_URL = reverse_lazy('notes:note_list')
 LOGOUT_REDIRECT_URL = reverse_lazy('account:login')
+
+DATETIME_FORMAT = 'd-m-Y H:i'
+
+REST_FRAMEWORK = {
+    'DATETIME_FORMAT': '%d-%m-%Y %H:%M'
+}
+
+

@@ -2,12 +2,52 @@
 
 {% block title %}Your notes{% endblock %}
 
+{% block subheader %}
+    <div id="subheader">
+        <div id="sorter">
+            <label for="field_list">Order by</label>
+            <select id="field_list">
+                <option value=""></option>
+                {% for field in order_field_names %}
+                    <option value="{{ field }}">{{ field }}</option>
+                {% endfor %}
+            </select>
+            <div>
+                <input id="ascending" name="sorter" type="radio" value="ascending" checked>
+                <label for="ascending">Ascending</label>
+                <input id="descending" name="sorter" type="radio" value="descending">
+                <label for="descending">Descending</label>
+            </div>
+            <div id="filter">
+                <label for="title">Title</label>
+                <input id="title" type="text">
+                <label for="category_list">Category</label>
+                <select id="category_list">
+                    <option value=""></option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}">{{ category.title }}</option>
+                    {% endfor %}
+                </select>
+                <label for="elect_list">Elect</label>
+                <select id="elect_list">
+                    <option value=""></option>
+                    <option value="true">Elected</option>
+                    <option value="false">Unelected</option>
+                </select>
+                <label for="datepicker">Created</label>
+                <input type="text" id="datepicker">
+            </div>
+        </div>
+        <button id="sort_button">Apply</button>
+    </div>
+{% endblock %}
+
 {% block content %}
     <h1>Your notes</h1>
     {% for note in object_list %}
         <div class="note">
             <h2><a href="{% url 'notes:note_detail' note.id %}">{{ note.title }}</a></h2>
-            <span><a href="#">{{ note.get_category_display }}</a></span>
+            <a href="#">{{ note.category.title }}</a>
             <p>{{ note.description|truncatewords:50|linebreaks }}</p>
             <span>{{ note.created }}</span>
             <div data-id="{{ note.id }}" class="score">

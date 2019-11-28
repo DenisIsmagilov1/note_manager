@@ -5,6 +5,108 @@
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock %}</title>
     <link href="{% static 'base.css' %}" rel="stylesheet" type="text/css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <script>
+        $(function() {
+        $("#datepicker").datepicker();
+    });
+    </script>
+    <script>
+        function get_note(title, id, category, description, created, is_elected) {
+            elect = is_elected == true ? 'Elected' : 'Unelected';
+            note = $('<div/>', {class: 'note'});
+            $('<h2/>').append($('<a/>', {href: '/notes/detail/'+id, text: title})).appendTo(note);
+            $('<a/>', {text: category['title']}).appendTo(note);
+            $('<p/>', {text: description}).appendTo(note);
+            $('<span/>', {text: created}).appendTo(note);
+            $('<div/>', {'data-id': id, class: 'score'}).append($('<span/>', {class: elect.toLowerCase(), text: elect})).appendTo(note);
+            $('<span/>', {'data-id': id, class: 'delete', text: ' Delete'}).appendTo(note);
+            return note
+        }
+        var csrftoken = Cookies.get('csrftoken');
+        function csrfSafeMethod(method) {
+          // these HTTP methods do not require CSRF protection
+          return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+        $.ajaxSetup({
+          beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+              xhr.setRequestHeader('X-CSRFToken', csrftoken);
+            }
+          }
+        });
+        $(document).ready(function () {
+            {% block domready %}
+            $('body').on('click', '.score', function (e) {
+                e.preventDefault();
+                var tag = $(this).find('span');
+                var pre_class = tag.attr('class');
+                $.post(
+                    '{% url 'notes:api:note_elect' %}',
+                    {id: $(this).data('id')},
+                    function(){
+                        tag.attr('class', null);
+                        tag.addClass(pre_class == 'elected' ? 'unelected' : 'elected');
+                        tag.text(pre_class == 'elected' ? 'Unelected' : 'Elected');
+                    });
+            });
+            $('body').on('click', '.delete', function (e) {
+                e.preventDefault();
+                chosen_element = $(this);
+                $.post(
+                    '{% url 'notes:api:note_delete' %}',
+                    {id: $(this).data('id')},
+                    function (data) {
+                        if (data['status'] == 'ok'){
+                            chosen_element.parent('.note').detach()
+                        }
+                    }
+                );
+            });
+            $('#sort_button').click(function (e) {
+                e.preventDefault();
+                order_field = $('#field_list option:selected').text();
+                is_ascending = $('#ascending').prop('checked');
+                title = $('#title').val();
+                category = $('#category_list option:selected').val();
+                is_elected = $('#elect_list option:selected').val();
+                date = $('#datepicker').val();
+                $.post(
+                   '{% url 'notes:api:note_list' %}',
+                   {order_by: order_field,
+                    ascending: is_ascending,
+                    filter_title: title,
+                    filter_category: category,
+                    elect: is_elected,
+                    filter_created: date},
+                    function (data) {
+                        if (data['status'] == 'ok') {
+                            $('.note, #content_message').detach();
+                            if (data['data'].length > 0){
+                                for (i=0; i < data['data'].length; i++){
+                                    title = data['data'][i]['title'];
+                                    id = data['data'][i]['id'];
+                                    category = data['data'][i]['category'];
+                                    description = data['data'][i]['description'];
+                                    is_elected = data['data'][i]['elect'];
+                                    created = data['data'][i]['created'];
+                                    note = get_note(title, id, category, description, created, is_elected);
+                                    note.appendTo('#content');
+                                }
+                            }
+                            else{
+                                $('<span/>', {id:'content_message', text: "No search results found"}).appendTo('#content');
+                            }
+                        }
+                    }
+                );
+            });
+        {% endblock %}
+        });
+    </script>
 </head>
 <body>
     <div id="header">
@@ -16,55 +118,11 @@
             <span id="login"><a href="{% url 'account:login' %}">Login</a></span>
         {% endif %}
     </div>
+    {% block subheader %}
+    {% endblock %}
     <div id="content">
         {% block content %}
         {% endblock %}
     </div>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
-    <script>
-        var csrftoken = Cookies.get('csrftoken');
-        function csrfSafeMethod(method) {
-          // these HTTP methods do not require CSRF protection
-          return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-        }
-        $.ajaxSetup({
-          beforeSend: function(xhr, settings) {
-            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-              xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            }
-          }
-        });
-        $(document).ready(function () {
-            {% block domready %}
-            $('.score').click(function (e) {
-                e.preventDefault();
-                var tag = $(this).find('span');
-                var pre_class = $(this).find('span').attr('class');
-                $.post(
-                    '{% url 'notes:note_elect' %}',
-                    {id: $(this).data('id')},
-                    function(){
-                        tag.attr('class', null);
-                        tag.addClass(pre_class == 'elected' ? 'unelected' : 'elected');
-                        tag.text(pre_class == 'elected' ? 'Unelected' : 'Elected');
-                    });
-            });
-            $('.delete').click(function (e) {
-                e.preventDefault();
-                chosen_element = $(this);
-                $.post(
-                    '{% url 'notes:note_delete' %}',
-                    {id: $(this).data('id')},
-                    function (data) {
-                        if (data['status'] == 'ok'){
-                            chosen_element.parent('.note').detach()
-                        }
-                    }
-                );
-            });
-        {% endblock %}
-        });
-    </script>
 </body>
 </html>
