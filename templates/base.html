@@ -9,28 +9,13 @@
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
     <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <script src="{% static 'script.js' %}"></script>
     <script>
         $(function() {
         $("#datepicker").datepicker();
     });
     </script>
     <script>
-        function truncate_words(str, qtywords) {
-            if (str.split(' ').length < qtywords)
-                return str;
-            return str.split(' ', qtywords).join(' ') + ' ...'
-        }
-        function get_note(title, id, category, description, created, is_elected) {
-            elect = is_elected == true ? 'Elected' : 'Unelected';
-            note = $('<div/>', {class: 'note'});
-            $('<h2/>').append($('<a/>', {href: '/notes/detail/'+id, text: title})).appendTo(note);
-            $('<span/>', {text: category['title']}).appendTo(note);
-            $('<p/>', {text: truncate_words(description, 49)}).appendTo(note);
-            $('<span/>', {text: created}).appendTo(note);
-            $('<div/>', {'data-id': id, class: 'score'}).append($('<span/>', {class: elect.toLowerCase(), text: elect})).appendTo(note);
-            $('<span/>', {'data-id': id, class: 'delete', text: ' Delete'}).appendTo(note);
-            return note
-        }
         var csrftoken = Cookies.get('csrftoken');
         function csrfSafeMethod(method) {
           // these HTTP methods do not require CSRF protection
@@ -44,19 +29,15 @@
           }
         });
         $(document).ready(function () {
-            {% block domready %}
             $('body').on('click', '.score', function (e) {
                 e.preventDefault();
-                var tag = $(this).find('span');
-                var pre_class = tag.attr('class');
+                var elect_span = $(this).find('span');
+                var pre_class = elect_span.attr('class');
                 $.post(
                     '{% url 'notes:api:note_elect' %}',
                     {id: $(this).data('id')},
-                    function(){
-                        tag.attr('class', null);
-                        tag.addClass(pre_class == 'elected' ? 'unelected' : 'elected');
-                        tag.text(pre_class == 'elected' ? 'Unelected' : 'Elected');
-                    });
+                    elect_note(elect_span, pre_class)
+                );
             });
             $('body').on('click', '.delete', function (e) {
                 e.preventDefault();
@@ -66,50 +47,18 @@
                     {id: $(this).data('id')},
                     function (data) {
                         if (data['status'] == 'ok'){
-                            chosen_element.parent('.note').detach()
-                        }
-                    }
-                );
-            });
-            $('#sort_button').click(function (e) {
-                e.preventDefault();
-                order_field = $('#field_list option:selected').text();
-                is_ascending = $('#ascending').prop('checked');
-                title = $('#title').val();
-                category = $('#category_list option:selected').val();
-                is_elected = $('#elect_list option:selected').val();
-                date = $('#datepicker').val();
-                $.post(
-                   '{% url 'notes:api:note_list' %}',
-                   {order_by: order_field,
-                    ascending: is_ascending,
-                    filter_title: title,
-                    filter_category: category,
-                    elect: is_elected,
-                    filter_created: date},
-                    function (data) {
-                        if (data['status'] == 'ok') {
-                            $('.note, #content_message').detach();
-                            if (data['data'].length > 0){
-                                for (i=0; i < data['data'].length; i++){
-                                    title = data['data'][i]['title'];
-                                    id = data['data'][i]['id'];
-                                    category = data['data'][i]['category'];
-                                    description = data['data'][i]['description'];
-                                    is_elected = data['data'][i]['elect'];
-                                    created = data['data'][i]['created'];
-                                    note = get_note(title, id, category, description, created, is_elected);
-                                    note.appendTo('#content');
-                                }
-                            }
-                            else{
-                                $('<span/>', {id:'content_message', text: "No search results found"}).appendTo('#content');
+                            chosen_element.parent('.note').detach();
+                            if($('#content.note').length < 1){
+                                span = $('<span/>', {text: 'Your note list is empty. '});
+                                span.appendTo($('#content'));
+                                $('<a/>', {href:'{% url 'notes:note_create' %}', text: 'Add your new note.'}).appendTo(span);
                             }
                         }
                     }
                 );
             });
-        {% endblock %}
+            {% block domready %}
+            {% endblock %}
         });
     </script>
 </head>
